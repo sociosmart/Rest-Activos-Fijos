@@ -1,0 +1,226 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API Activos",
+    "version": "1.0.0",
+    "description": "API para gestión de activos con JWT e imágenes protegidas"
+  },
+  "servers": [
+    {
+      "url": "http://localhost/api_activos_v2/public"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "Activo": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "nombre": { "type": "string" },
+          "ubicacion": { "type": "string" },
+          "compania": { "type": "string" },
+          "fecha": { "type": "string", "format": "date" },
+          "fotografia": { "type": "string" }
+        }
+      }
+    }
+  },
+
+  "paths": {
+
+    "/auth": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Login",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "usuario": "admin",
+                "password": "123456"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token generado"
+          }
+        }
+      }
+    },
+
+    "/activos": {
+      "get": {
+        "tags": ["Activos"],
+        "summary": "Listar activos",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Lista de activos"
+          }
+        }
+      },
+
+      "post": {
+        "tags": ["Activos"],
+        "summary": "Crear activo (admin)",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": ["nombre", "fotografia"],
+                "properties": {
+                  "nombre": { "type": "string" },
+                  "ubicacion": { "type": "string" },
+                  "compania": { "type": "string" },
+                  "fecha": { "type": "string", "format": "date" },
+                  "latitud": { "type": "string" },
+                  "longitud": { "type": "string" },
+                  "fotografia": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Activo creado"
+          },
+          "403": {
+            "description": "Solo admin"
+          }
+        }
+      }
+    },
+
+    "/activos/{id}": {
+      "get": {
+        "tags": ["Activos"],
+        "summary": "Obtener activo por ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Activo encontrado"
+          },
+          "404": {
+            "description": "No encontrado"
+          }
+        }
+      },
+
+      "put": {
+        "tags": ["Activos"],
+        "summary": "Actualizar activo (admin, soporta imagen)",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nombre": { "type": "string" },
+                  "ubicacion": { "type": "string" },
+                  "compania": { "type": "string" },
+                  "fecha": { "type": "string", "format": "date" },
+                  "latitud": { "type": "string" },
+                  "longitud": { "type": "string" },
+                  "fotografia": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Actualizado"
+          },
+          "403": {
+            "description": "Solo admin"
+          }
+        }
+      },
+
+      "delete": {
+        "tags": ["Activos"],
+        "summary": "Eliminar activo (admin)",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Eliminado"
+          },
+          "403": {
+            "description": "Solo admin"
+          }
+        }
+      }
+    },
+
+    "/activos/{id}/imagen": {
+      "get": {
+        "tags": ["Activos"],
+        "summary": "Obtener imagen del activo",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Imagen binaria",
+            "content": {
+              "image/jpeg": {},
+              "image/png": {}
+            }
+          }
+        }
+      }
+    }
+
+  }
+}
