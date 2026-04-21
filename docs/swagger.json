@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "http://localhost/api_activos_v2/public"
+      "url": "http://172.16.64.120:8080/api_activos_v2/public"
     }
   ],
   "components": {
@@ -44,7 +44,7 @@
           "content": {
             "application/json": {
               "example": {
-                "usuario": "admin",
+                "email": "admin@test.com",
                 "password": "123456"
               }
             }
@@ -220,7 +220,40 @@
           }
         }
       }
+    },
+     "/holos/{tipo}": {
+      "post": {
+        "tags": ["Holos (Optimizado)"],
+        "summary": "Consulta dinámica Holos (selector)",
+        "description": "Permite consultar categorias, analitica o companias desde un solo endpoint",
+
+        "security": [{ "bearerAuth": [] }],
+
+        "parameters": [
+          {
+            "name": "tipo",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["categorias", "analitica", "companias"]
+            }
+          }
+        ],
+
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HolosResponse" }
+              }
+            }
+          }
+        }
+      }
     }
+
 
   }
 }

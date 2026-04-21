@@ -25,6 +25,15 @@ if (
     require __DIR__ . '/activos/activos.controller.php';
     exit;
 }
+// 🔥 ACTIVOS (incluye /activo/29)
+if (
+    $path === 'holos' ||
+    strpos($path, 'holos/') === 0 ||
+    strpos($path, 'holo') === 0
+) {
+    require __DIR__ . '/holos/holos.controller.php';
+    exit;
+}
 
 // ❌ NO ENCONTRADO
 http_response_code(404);
